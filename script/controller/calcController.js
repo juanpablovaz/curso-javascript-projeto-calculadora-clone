@@ -7,7 +7,6 @@ class CalcController {
         this._displayCalcEl = document.querySelector("#display");
         this._dateEl = document.querySelector("#data");
         this._timeEl = document.querySelector("#hora");
-        this._displayCalc;
         this._currentDate;
         this.initialize();
         this.initButtonsEvents();
@@ -55,44 +54,58 @@ class CalcController {
         return this._operation[this._operation.length - 1];
     }
 
+    setLastOperation(value) {
+
+        this._operation[this._operation.length - 1] = value;
+
+    }
+
     isOperator(value) {
-        return (['+', '-', '%', '*', '/'].indexOf(value) > -1); //Esse metodo busca o valor no metodo. Se achar ele tras o index
+        return (['+', '-', '%', '*', '/'].indexOf(value) > -1); //(['+', '-', '%', '*', '/'].indexOf 
+        //Esse metodo busca o valor no metodo. Se achar ele tras o index
     }
 
     addOperation(value) {
-
-        console.log(this.getLastOperation())
+        console.log("A", value, isNaN(this.getLastOperation()))
 
         if (isNaN(this.getLastOperation())) {
             //String
-
             if (this.isOperator(value)) {
                 //trocar o operador
-                return this._operation[this._operation.length - 1] = value;
 
+                this._setLastOperation(value);
+
+            } else if (isNaN(value)) {
+                //outra coisa
+                console.log(value);
 
             } else {
-                //outra coisa
-                console.log(value)
+                this._operation.push(value);
             }
 
 
         } else {
             //number
-            // Se o usuario digitar um numero e digitar outro, eu quero concatenar eles
-            let newValue = this.getLastOperation() + value.toString();
-            this._operation.push(newValue);
+
+            if (this.isOperator(value)) {
+                this._operation.push(value);
+            } else {
+
+                let newValue = this.getLastOperation().toString() + value.toString();
+                this.setLastOperation(parseInt(newValue));
+
+            }
+
 
         }
 
-
-
         console.log(this._operation)
+
     }
 
 
     setError() {
-        this.displayCalc = "Error"
+        this.displayCalc = "Error";
     }
 
     execBtn(value) {
@@ -135,6 +148,7 @@ class CalcController {
 
             case '0':
             case '1':
+            case '2':
             case '3':
             case '4':
             case '5':
@@ -142,7 +156,7 @@ class CalcController {
             case '7':
             case '8':
             case '9':
-                this.addOperation(parseInt(value))
+                this.addOperation(parseInt(value));
                 break;
 
             default:
@@ -163,11 +177,11 @@ class CalcController {
 
         buttons.forEach((btn, index) => {
 
-            this.addEventListenerAll(btn, 'click drag mouseover', e => {
+            this.addEventListenerAll(btn, "click drag", e => {
 
-                let execBtn = btn.className.baseVal.replace("btn-", " ");
+                let textBtn = btn.className.baseVal.replace("btn-", "");
 
-                this.execBtn(execBtn);
+                this.execBtn(textBtn);
 
             });
 
