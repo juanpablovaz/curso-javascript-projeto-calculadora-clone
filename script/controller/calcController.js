@@ -51,6 +51,7 @@ class CalcController {
     }
 
     getLastOperation() {
+
         return this._operation[this._operation.length - 1];
     }
 
@@ -61,26 +62,50 @@ class CalcController {
     }
 
     isOperator(value) {
+
         return (['+', '-', '%', '*', '/'].indexOf(value) > -1); //(['+', '-', '%', '*', '/'].indexOf 
-        //Esse metodo busca o valor no metodo. Se achar ele tras o index
+        //Esse metodo busca o valor no metodo de array criado. Se achar ele tras o index que vai de 0 à 4. Se não encontrar, ele retorna -1
     }
 
+    calc(){
+
+        let last = this._operation.pop(value);
+
+        let result = eval(this._operation.join(""));
+        
+        this._operation = [result, last];
+
+
+    }
+
+    pushOperation(value){
+
+        this._operation.push(value);
+
+        if (this._operation.length > 3){
+
+            
+
+            this.calc();
+            console.log(this._operation);
+        }
+
+    }
     addOperation(value) {
-        console.log("A", value, isNaN(this.getLastOperation()))
 
         if (isNaN(this.getLastOperation())) {
             //String
             if (this.isOperator(value)) {
                 //trocar o operador
 
-                this._setLastOperation(value);
+                this.setLastOperation(value);
 
             } else if (isNaN(value)) {
                 //outra coisa
-                console.log(value);
+                console.log("Outra Coisa ", value);
 
             } else {
-                this._operation.push(value);
+                this.pushOperation(value);
             }
 
 
@@ -88,7 +113,9 @@ class CalcController {
             //number
 
             if (this.isOperator(value)) {
-                this._operation.push(value);
+
+                this.pushOperation(value);
+
             } else {
 
                 let newValue = this.getLastOperation().toString() + value.toString();
@@ -98,8 +125,6 @@ class CalcController {
 
 
         }
-
-        console.log(this._operation)
 
     }
 
