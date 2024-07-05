@@ -2,6 +2,9 @@ class CalcController {
 
     constructor() {
 
+        this._lastOperator = '';
+        this._lastNumber = '';
+        
         this._operation = [];
         this._locale = 'pt-BR'
         this._displayCalcEl = document.querySelector("#display");
@@ -20,6 +23,8 @@ class CalcController {
         setInterval(() => {
             this.setDisplayDateTime();   //chama o método
         }, 1000);
+
+        this.setLastNumberToDisplay();
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // O timeOut serve para apresentarmos algo em um determinado tempo. Nesse exemplo, eu consigo fazer com que a contagem de segundos pare após 10 segundos do seu inicio.
@@ -45,9 +50,13 @@ class CalcController {
     clearAll() {
         this._operation = [];
 
+        this.setLastNumberToDisplay();
+
     }
     clearEntry() {
         this._operation.pop();
+
+        this.setLastNumberToDisplay();
     }
 
     getLastOperation() {
@@ -67,14 +76,36 @@ class CalcController {
         //Esse metodo busca o valor no metodo de array criado. Se achar ele tras o index que vai de 0 à 4. Se não encontrar, ele retorna -1
     }
 
+
+    getResult (){
+        return eval(this._operation.join(""));
+    }
+
     calc(){
 
-        let last = this._operation.pop(value);
+        let last = '';
+        if (this._operation.length > 3){
+            last = this._operation.pop();
+            let result = this.getResult ();
 
-        let result = eval(this._operation.join(""));
+        }
+
+        let result = this.getResult ();
+
+        if ( last== '%' ){
+            result  /= 100
+
+            this._operation = [result];
+        }else{
+            
+        this._operation = [result];
+
+        if (last) this._operation.push(last);
+        }
+
         
-        this._operation = [result, last];
 
+        this.setLastNumberToDisplay();
 
     }
 
@@ -84,13 +115,33 @@ class CalcController {
 
         if (this._operation.length > 3){
 
-            
-
             this.calc();
-            console.log(this._operation);
         }
 
     }
+
+    setLastNumberToDisplay(){
+
+        let lastNumber;
+
+        for( let i = this._operation.length -1; i >=0; i--){
+
+            if(!this.isOperator(this._operation[i])){
+
+                lastNumber = this._operation[i];
+                break;
+
+            }
+
+        }
+
+        if(!lastNumber) lastNumber = 0;
+
+        this.displayCalc = lastNumber;
+
+    }
+
+
     addOperation(value) {
 
         if (isNaN(this.getLastOperation())) {
@@ -105,7 +156,11 @@ class CalcController {
                 console.log("Outra Coisa ", value);
 
             } else {
+
                 this.pushOperation(value);
+
+                this.setLastNumberToDisplay();
+
             }
 
 
@@ -120,6 +175,8 @@ class CalcController {
 
                 let newValue = this.getLastOperation().toString() + value.toString();
                 this.setLastOperation(parseInt(newValue));
+
+                this.setLastNumberToDisplay();
 
             }
 
@@ -164,6 +221,7 @@ class CalcController {
                 break;
 
             case 'igual':
+                this.calc();
 
                 break;
 
