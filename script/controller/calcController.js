@@ -81,6 +81,11 @@ class CalcController {
         return eval(this._operation.join(""));
     }
 
+
+    getResult(){
+        
+    }
+
     calc(){
 
         let last = '';
